@@ -200,7 +200,7 @@ public class HospitalSuSalud {
             if (atendido == null) {
                 System.out.println("No hay pacientes pendientes en ninguna cola.");
             } else {
-                Timestamp fechaAtencion = new Timestamp(System.currentTimeMillis()); 
+                Timestamp fechaAtencion = new Timestamp(System.currentTimeMillis());
                 System.out.println("Ficha: " + atendido.getNumeroFicha());
                 System.out.println("Nombre: " + atendido.getNombre());
                 System.out.println("Tipo: " + (atendido.isPreferencial() ? "Preferencial" : "Regular"));
@@ -212,6 +212,19 @@ public class HospitalSuSalud {
                 String doctor = teclado.nextLine().trim();
                 System.out.print("Diagnostico: ");
                 String diagnostico = teclado.nextLine().trim();
+                System.out.println();
+                System.out.println("--- Medicamentos prescritos ---");
+                System.out.print("Cantidad de medicamentos: ");
+                int cantidad = leerOpcion();
+                String[] medicamentos = new String[cantidad];
+                for (int i = 0; i < cantidad; i++) {
+                    System.out.print("Medicamento " + (i + 1) + ": ");
+                    medicamentos[i] = teclado.nextLine().trim();
+                }
+                System.out.println();
+                System.out.println("Paciente "+ atendido.getNombre() +", su cita ha con"
+                        + "cluido.");
+                
                 
             }
         } catch (Exception ex) {

@@ -207,12 +207,16 @@ public class HospitalSuSalud {
                 System.out.println("Cedula: " + atendido.getCedula());
                 System.out.println("Llegada: " + new Timestamp(atendido.getFechaLlegada().getTime()));
                 System.out.println();
+                // B1: buscar expediente por cedula
+                //     si es null -> mensaje primera vez, pedir edad y genero, crear expediente
+                //     si no -> mostrar cedula, nombre, edad, genero
                 System.out.println("--- Datos de la cita ---");
                 System.out.print("Nombre del doctor: ");
                 String doctor = teclado.nextLine().trim();
                 System.out.print("Diagnostico: ");
                 String diagnostico = teclado.nextLine().trim();
                 System.out.println();
+                
                 System.out.println("--- Medicamentos prescritos ---");
                 System.out.print("Cantidad de medicamentos: ");
                 int cantidad = leerOpcion();
@@ -221,9 +225,12 @@ public class HospitalSuSalud {
                     System.out.print("Medicamento " + (i + 1) + ": ");
                     medicamentos[i] = teclado.nextLine().trim();
                 }
+                // B2: guardar Cita en historico de citas
+                // B3: guardar cada Medicamento en historico de medicamentos
+                // B4: guardar registro en la bitacora del dia
                 System.out.println();
-                System.out.println("Paciente "+ atendido.getNombre() +", su cita ha con"
-                        + "cluido.");
+                System.out.println("Paciente "+ atendido.getNombre() +", su cita ha concluido.");
+                        
                 
                 
             }

@@ -105,6 +105,9 @@ public class GestionPacientes {
      * @return el paciente eliminado, o null si la ficha no existe en ninguna cola
      */
     public Pacientes eliminarPacientePorFicha(String numeroFicha) {
+        if (numeroFicha == null || numeroFicha.trim().isEmpty()) {
+            return null;
+        }
         Pacientes paciente = colaRegular.eliminarPorFicha(numeroFicha);
         if (paciente == null) {
             paciente = colaPreferencial.eliminarPorFicha(numeroFicha);

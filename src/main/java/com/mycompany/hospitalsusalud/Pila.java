@@ -19,12 +19,22 @@ public class Pila {
         return tope;
     }
 
+    /** Agrega una queja al tope de la pila.
+     * @param queja queja que se almacena
+     */
     public void apilar(Queja queja) {
+        if (queja == null) {
+            throw new IllegalArgumentException("La queja no puede ser null.");
+        }
         NodoQueja nuevoNodo = new NodoQueja(queja);
         nuevoNodo.setSiguiente(tope);
         tope = nuevoNodo;
     }
 
+    /** Retira la queja mas reciente.
+     * @return queja retirada
+     * @throws Exception si la pila esta vacia
+     */
     public Queja desapilar() throws Exception {
         if (this.estaVacia()) {
             throw new Exception("La pila esta vacia");
@@ -34,10 +44,12 @@ public class Pila {
         return quejaTope;
     }
 
+    /** @return true si no existen quejas registradas */
     public boolean estaVacia() {
         return tope == null;
     }
 
+    /** Muestra las quejas en orden LIFO sin eliminarlas. */
     public void imprimirPila() {
         if (this.estaVacia()) {
             System.out.println("No hay quejas registradas.");

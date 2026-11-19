@@ -79,12 +79,22 @@ public class Cola {
         System.out.println();
     }
 
+    /**
+     * Elimina una ficha de cualquier posicion de la cola sin alterar el orden
+     * de los demas pacientes. Actualiza frente y fin cuando corresponde.
+     *
+     * @param numeroFicha identificador de la ficha a retirar
+     * @return paciente retirado, o null si la ficha no existe o es invalida
+     */
     public Pacientes eliminarPorFicha(String numeroFicha) {
+        if (numeroFicha == null || numeroFicha.trim().isEmpty()) {
+            return null;
+        }
+        String fichaBuscada = numeroFicha.trim();
         Nodo actual = frente;
         Nodo anterior = null;
-
         while (actual != null) {
-            if (actual.getPaciente().getNumeroFicha().equalsIgnoreCase(numeroFicha)) {
+            if (actual.getPaciente().getNumeroFicha().equalsIgnoreCase(fichaBuscada)) {
                 if (anterior == null) {
                     frente = actual.getSiguiente();
                 } else {
@@ -93,6 +103,11 @@ public class Cola {
                 if (actual == fin) {
                     fin = anterior;
                 }
+                // Si se elimino el unico nodo, ambas referencias quedan nulas.
+                if (frente == null) {
+                    fin = null;
+                }
+                actual.setSiguiente(null);
                 return actual.getPaciente();
             }
             anterior = actual;

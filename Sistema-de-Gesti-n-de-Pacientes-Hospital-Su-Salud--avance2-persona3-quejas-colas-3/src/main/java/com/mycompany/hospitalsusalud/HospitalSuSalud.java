@@ -77,7 +77,7 @@ public class HospitalSuSalud {
         } while (opcion != 5);
     }
 
-    // Mendasje de bienvenida
+    //* Muestra el mendasje de bienvenida */
     public static void mostrarBienvenida() {
 
         System.out.println("----------------------------------------");

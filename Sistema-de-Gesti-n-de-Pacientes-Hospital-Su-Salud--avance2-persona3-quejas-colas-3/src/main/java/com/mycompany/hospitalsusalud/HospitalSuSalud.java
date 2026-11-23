@@ -19,6 +19,7 @@ public class HospitalSuSalud {
 
     static GestionPacientes gestionPacientes = new GestionPacientes();
     static GestionQuejas gestionQuejas = new GestionQuejas();
+    static GestionExpedientes gestionExpedientes = new GestionExpedientes();
 
     public static void main(String[] args) {
 
@@ -186,7 +187,12 @@ public class HospitalSuSalud {
         pausar();
     }
 
-    //Atender paciente
+   /**
+     * Atiende al siguiente paciente de la cola. Busca su expediente:
+     * si es nuevo lo crea, si existe muestra sus datos. Solicita al doctor
+     * los datos de la cita, el diagnostico y los medicamentos, y los guarda
+     * en el expediente y en la bitacora del dia.
+     */
     public static void atenderPaciente() {
 
         System.out.println("\n-------------------------------------");
@@ -201,22 +207,40 @@ public class HospitalSuSalud {
                 System.out.println("No hay pacientes pendientes en ninguna cola.");
             } else {
                 Timestamp fechaAtencion = new Timestamp(System.currentTimeMillis());
+                Timestamp fechaLlegada = new Timestamp(atendido.getFechaLlegada().getTime());
+
                 System.out.println("Ficha: " + atendido.getNumeroFicha());
                 System.out.println("Nombre: " + atendido.getNombre());
                 System.out.println("Tipo: " + (atendido.isPreferencial() ? "Preferencial" : "Regular"));
                 System.out.println("Cedula: " + atendido.getCedula());
-                System.out.println("Llegada: " + new Timestamp(atendido.getFechaLlegada().getTime()));
+                System.out.println("Llegada: " + fechaLlegada);
                 System.out.println();
-                // B1: buscar expediente por cedula
-                //     si es null -> mensaje primera vez, pedir edad y genero, crear expediente
-                //     si no -> mostrar cedula, nombre, edad, genero
+
+                // B1: buscar expediente
+                Expediente expediente = gestionExpedientes.buscarExpediente(atendido.getCedula());
+                if (expediente == null) {
+                    System.out.println("Paciente " + atendido.getNombre() + " asiste a consulta por primera vez.");
+                    System.out.println();
+                    System.out.println("--- Datos del expediente ---");
+                    System.out.print("Edad: ");
+                    int edad = leerOpcion();
+                    System.out.print("Genero: ");
+                    String genero = teclado.nextLine().trim();
+                    expediente = gestionExpedientes.crearExpediente(
+                            atendido.getCedula(), atendido.getNombre(), edad, genero);
+                } else {
+                    System.out.println("--- Datos del paciente ---");
+                    expediente.mostrarDatosPersonales();
+                }
+                System.out.println();
+
                 System.out.println("--- Datos de la cita ---");
                 System.out.print("Nombre del doctor: ");
                 String doctor = teclado.nextLine().trim();
                 System.out.print("Diagnostico: ");
                 String diagnostico = teclado.nextLine().trim();
                 System.out.println();
-                
+
                 System.out.println("--- Medicamentos prescritos ---");
                 System.out.print("Cantidad de medicamentos: ");
                 int cantidad = leerOpcion();
@@ -225,14 +249,23 @@ public class HospitalSuSalud {
                     System.out.print("Medicamento " + (i + 1) + ": ");
                     medicamentos[i] = teclado.nextLine().trim();
                 }
-                // B2: guardar Cita en historico de citas
-                // B3: guardar cada Medicamento en historico de medicamentos
-                // B4: guardar registro en la bitacora del dia
+
+                // B2: guardar la cita
+                expediente.getHistoricoCitas().insertar(new Cita(fechaAtencion, doctor, diagnostico));
+
+                // B3: guardar cada medicamento
+                for (int i = 0; i < cantidad; i++) {
+                    expediente.getHistoricoMedicamentos().insertar(
+                            new Medicamento(fechaAtencion, medicamentos[i]));
+                }
+
+                // B4: guardar en la bitacora
+                gestionExpedientes.getBitacora().insertar(new RegistroBitacora(
+                        atendido.getNumeroFicha(), atendido.getCedula(), atendido.getNombre(),
+                        fechaLlegada, fechaAtencion));
+
                 System.out.println();
-                System.out.println("Paciente "+ atendido.getNombre() +", su cita ha concluido.");
-                        
-                
-                
+                System.out.println("Paciente " + atendido.getNombre() + ", su cita ha concluido.");
             }
         } catch (Exception ex) {
             System.out.println("Error: " + ex.getMessage());
@@ -240,7 +273,6 @@ public class HospitalSuSalud {
 
         pausar();
     }
-
     // Abandonar cola
     public static void abandonarCola() {
 

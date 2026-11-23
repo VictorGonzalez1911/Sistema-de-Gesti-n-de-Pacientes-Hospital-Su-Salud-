@@ -65,13 +65,14 @@ public class Cola {
     }
     public void imprimirCola(){
         if (this.estaVacia()){
-            System.out.println("La cola esta vacia: ");
+            System.out.println("La cola esta vacia. ");
+            return;
         }
         Nodo actual = frente;
 
         while(actual != null){
             System.out.print(actual.getPaciente().getNumeroFicha()+ " - " +
-            actual.getPaciente().getNombre() + "- " + actual.getPaciente().getCedula() + " | " );
+            actual.getPaciente().getNombre() + " - " + actual.getPaciente().getCedula() );
             actual = actual.getSiguiente();
             System.out.println();
 

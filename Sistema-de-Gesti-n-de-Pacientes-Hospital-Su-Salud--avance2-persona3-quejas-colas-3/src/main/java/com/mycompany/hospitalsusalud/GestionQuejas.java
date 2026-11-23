@@ -11,7 +11,7 @@ public class GestionQuejas {
 
     /** Inicializa la pila de quejas vacia. */
     public GestionQuejas() {
-        this.quejas = new Pila();
+        this.quejas = new PilaQuejas();
     }
 
     /**

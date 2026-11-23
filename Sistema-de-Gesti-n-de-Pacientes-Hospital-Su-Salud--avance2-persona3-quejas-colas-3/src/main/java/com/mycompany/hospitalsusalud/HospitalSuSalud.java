@@ -1,7 +1,5 @@
 package com.mycompany.hospitalsusalud;
 
-
-
 import com.mycompany.hospitalsusalud.GestionQuejas;
 import com.mycompany.hospitalsusalud.Pacientes;
 import com.mycompany.hospitalsusalud.GestionPacientes;
@@ -28,7 +26,7 @@ public class HospitalSuSalud {
 
     }
 
-    //Menu Principal
+    /** Muestra el menu principal y ejecuta la opcion que elija el usuario. */
     public static void menuPrincipal() {
 
         int opcion = 0;
@@ -43,36 +41,40 @@ public class HospitalSuSalud {
             System.out.println("MENU PRINCIPAL");
             System.out.println();
             System.out.println("1. Gestionar Llegada de Pacientes");
-            System.out.println("2. Ayuda");
-            System.out.println("3. Salir");
+            System.out.println("2. Consulta de Bitacora de Citas del dia");
+            System.out.println("3. Consulta de Expediente unico de Pacientes");
+            System.out.println("4. Ayuda");
+            System.out.println("5. Salir");
             System.out.println();
             System.out.print("Seleccione una opcion: ");
 
             opcion = leerOpcion();
 
             switch (opcion) {
-
                 case 1:
                     menuGestionarLlegada();
                     break;
-
                 case 2:
+                    consultarBitacora();
+                    break;
+                case 3:
+                    consultarExpedientes();
+                    break;
+                case 4:
                     mostrarAyuda();
                     break;
-
-                case 3:
+                case 5:
                     salirSistema();
                     break;
-
                 default:
                     System.out.println();
                     System.out.println("Opcion invalida.");
-                    System.out.println("Por favor seleccione una opcion del 1 al 3.");
+                    System.out.println("Por favor seleccione una opcion del 1 al 5.");
                     pausar();
                     break;
             }
 
-        } while (opcion != 3);
+        } while (opcion != 5);
     }
 
     // Mendasje de bienvenida
@@ -187,11 +189,11 @@ public class HospitalSuSalud {
         pausar();
     }
 
-   /**
-     * Atiende al siguiente paciente de la cola. Busca su expediente:
-     * si es nuevo lo crea, si existe muestra sus datos. Solicita al doctor
-     * los datos de la cita, el diagnostico y los medicamentos, y los guarda
-     * en el expediente y en la bitacora del dia.
+    /**
+     * Atiende al siguiente paciente de la cola. Busca su expediente: si es
+     * nuevo lo crea, si existe muestra sus datos. Solicita al doctor los datos
+     * de la cita, el diagnostico y los medicamentos, y los guarda en el
+     * expediente y en la bitacora del dia.
      */
     public static void atenderPaciente() {
 
@@ -224,6 +226,10 @@ public class HospitalSuSalud {
                     System.out.println("--- Datos del expediente ---");
                     System.out.print("Edad: ");
                     int edad = leerOpcion();
+                    while (edad <= 0) {
+                        System.out.print("Ingrese una edad valida: ");
+                        edad = leerOpcion();
+                    }
                     System.out.print("Genero: ");
                     String genero = teclado.nextLine().trim();
                     expediente = gestionExpedientes.crearExpediente(
@@ -244,6 +250,10 @@ public class HospitalSuSalud {
                 System.out.println("--- Medicamentos prescritos ---");
                 System.out.print("Cantidad de medicamentos: ");
                 int cantidad = leerOpcion();
+                while (cantidad < 0) {
+                    System.out.print("Ingrese un numero valido: ");
+                    cantidad = leerOpcion();
+                }
                 String[] medicamentos = new String[cantidad];
                 for (int i = 0; i < cantidad; i++) {
                     System.out.print("Medicamento " + (i + 1) + ": ");
@@ -273,6 +283,7 @@ public class HospitalSuSalud {
 
         pausar();
     }
+
     // Abandonar cola
     public static void abandonarCola() {
 
@@ -296,8 +307,6 @@ public class HospitalSuSalud {
     }
 
     // Mostrar fichas
-
-
     public static void mostrarFichasPendientes() {
 
         System.out.println("\n-------------------------------------------");
@@ -314,9 +323,7 @@ public class HospitalSuSalud {
         pausar();
     }
 
-
     // Mostrar quejas
-
     public static void mostrarQuejas() {
 
         System.out.println("\n-------------------------------------------");
@@ -329,8 +336,59 @@ public class HospitalSuSalud {
         pausar();
     }
 
-    //ayuda
+    /**
+     * Muestra la bitacora de citas del dia con colores segun el tiempo de
+     * espera.
+     */
+    public static void consultarBitacora() {
+        System.out.println("\n-------------------------------------------");
+        System.out.println("       BITACORA DE CITAS DEL DIA");
+        System.out.println("-------------------------------------------");
+        System.out.println();
+        gestionExpedientes.getBitacora().imprimir();
+        pausar();
+    }
 
+    /**
+     * Permite ver uno por uno los expedientes registrados, avanzando o
+     * retrocediendo en la lista doble circular.
+     */
+    public static void consultarExpedientes() {
+        ListaExpedientes lista = gestionExpedientes.getExpedientes();
+        if (lista.estaVacia()) {
+            System.out.println("\nNo hay expedientes registrados.");
+            pausar();
+            return;
+        }
+        NodoExpediente actual = lista.getCabeza();
+        int opcion;
+        do {
+            Expediente e = actual.getExpediente();
+            System.out.println("\n-------------------------------------------");
+            System.out.println("       EXPEDIENTE UNICO DE PACIENTES");
+            System.out.println("-------------------------------------------");
+            e.mostrarDatosPersonales();
+            System.out.println("Historico de citas:");
+            e.getHistoricoCitas().imprimir();
+            System.out.println("Historico de medicamentos:");
+            e.getHistoricoMedicamentos().imprimir();
+            System.out.println();
+            System.out.println("1. Siguiente");
+            System.out.println("2. Anterior");
+            System.out.println("3. Regresar al Menu Principal");
+            System.out.print("Seleccione una opcion: ");
+            opcion = leerOpcion();
+            if (opcion == 1) {
+                actual = actual.getSiguiente();
+            } else if (opcion == 2) {
+                actual = actual.getAnterior();
+            } else if (opcion != 3) {
+                System.out.println("Opcion invalida.");
+            }
+        } while (opcion != 3);
+    }
+
+    //ayuda
     public static void mostrarAyuda() {
 
         System.out.println("\n-------------------------------------------");
@@ -339,6 +397,13 @@ public class HospitalSuSalud {
         System.out.println();
         System.out.println("Sistema de Gestion de Pacientes");
         System.out.println("Hospital Su Salud");
+        System.out.println("Version 2.0 (Avance 2)");
+        System.out.println();
+        System.out.println("Integrantes:");
+        System.out.println("- Christian Andres Garcia Aguilar");
+        System.out.println("- Victor Manuel Gonzalez Carballo");
+        System.out.println("- Emily Maria Mora Vizcaino");
+        System.out.println("- Javier de Jesus Sandi Mora");
         System.out.println();
         System.out.println("INSTRUCCIONES:");
         System.out.println();
@@ -346,24 +411,38 @@ public class HospitalSuSalud {
         System.out.println("   Permite ingresar al modulo principal");
         System.out.println("   para gestionar a los pacientes.");
         System.out.println();
-        System.out.println("2. Seleccionar Ficha:");
+        
+        System.out.println("   1.1 Seleccionar Ficha:");
         System.out.println("   Permite seleccionar una ficha regular");
         System.out.println("   o preferencial.");
         System.out.println();
-        System.out.println("3. Atender Paciente:");
+        System.out.println("   1.2 Atender Paciente:");
         System.out.println("   Permite atender a los pacientes");
         System.out.println("   que se encuentran en espera.");
         System.out.println();
-        System.out.println("4. Abandonar Cola:");
+        System.out.println("   1.3 Abandonar Cola:");
         System.out.println("   Permite retirar a un paciente de la cola");
         System.out.println("   y registrar el motivo correspondiente.");
         System.out.println();
-        System.out.println("5. Mostrar Fichas Pendientes:");
+        System.out.println("   1.4 Mostrar Fichas Pendientes:");
         System.out.println("   Muestra los pacientes que aun se");
         System.out.println("   encuentran pendientes de atencion.");
         System.out.println();
-        System.out.println("6. Mostrar Quejas:");
+        System.out.println("   1.5 Mostrar Quejas:");
         System.out.println("   Permite consultar las quejas recibidas.");
+        System.out.println();
+        System.out.println("2. Consulta de Bitacora: citas del dia con colores");
+        System.out.println("   (verde, amarillo o rojo segun la espera).");
+        System.out.println();
+        System.out.println("3. Consulta de Expedientes: ver expedientes uno por");
+        System.out.println("   uno, con opcion de avanzar y retroceder.");
+        System.out.println();
+        System.out.println("4. Ayuda:");
+        System.out.println("   Muestra las instrucciones de uso, la version");
+        System.out.println("   del sistema y los integrantes del grupo.");
+        System.out.println();
+        System.out.println("5. Salir:");
+        System.out.println("   Cierra el sistema de gestion de pacientes.");
         System.out.println();
         System.out.println("Para utilizar el sistema, escriba el numero");
         System.out.println("de la opcion deseada y presione Enter.");
@@ -372,7 +451,6 @@ public class HospitalSuSalud {
     }
 
     // Salir del sistema
-    
     public static void salirSistema() {
 
         System.out.println("\n-------------------------------------------");
@@ -403,9 +481,7 @@ public class HospitalSuSalud {
         return opcion;
     }
 
-
     // Metodo de pausar
-
     public static void pausar() {
 
         System.out.println();
